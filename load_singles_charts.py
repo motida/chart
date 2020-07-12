@@ -1,3 +1,4 @@
+import os
 from datetime import date
 from time import sleep
 
@@ -11,7 +12,7 @@ import requests
 BASE_URL = 'https://www.officialcharts.com'
 BATCH_SIZE = 2000
 TABLE_NAME = 'charts.singles'
-PROJECT_ID = 'motida2'
+PROJECT_ID = os.getenv('GCP_PROJECT_ID')
 TABLE_SCHEMA = [{'name': 'id', 'type': 'INTEGER'},
                 {'name': 'from_date', 'type': 'DATE'},
                 {'name': 'to_date', 'type': 'DATE'},
@@ -19,11 +20,12 @@ TABLE_SCHEMA = [{'name': 'id', 'type': 'INTEGER'},
                 {'name': 'title', 'type': 'STRING'},
                 {'name': 'artist', 'type': 'STRING'},
                 {'name': 'label', 'type': 'STRING'}]
+FIRST_CHART_DATE = date(1952, 11, 14)
 
 
 def main(first_chart_date_str):
     next_chart_url = '{}/charts/singles-chart/{}/7501/'.format(BASE_URL, first_chart_date_str)
-    chart_id = 448
+    chart_id = 848
     batch_data = pd.DataFrame()
     while next_chart_url:
         data, next_chart_url = get_chart_data(chart_id, next_chart_url)
@@ -31,9 +33,8 @@ def main(first_chart_date_str):
         if len(batch_data) >= BATCH_SIZE:
             batch_data.to_gbq(TABLE_NAME, project_id=PROJECT_ID, table_schema=TABLE_SCHEMA, if_exists='append')
             batch_data = pd.DataFrame()
-            sleep(10)
         chart_id += 1
-        sleep(10)
+        sleep(1)
         #print(next_chart_url)
     if len(batch_data) > 0:
         batch_data.to_gbq(TABLE_NAME, project_id=PROJECT_ID, table_schema=TABLE_SCHEMA, if_exists='append')
@@ -74,8 +75,8 @@ def get_chart_data(chart_id, curr_chart_url):
 
 
 if __name__ == '__main__':
-    first_chart_date = date(1961, 6, 8)
-    #first_chart_date = date(2019, 12, 13)
+    first_chart_date = date(1969, 2, 5)
+    #first_chart_date = FIRST_CHART_DATE
     first_chart_date_str = first_chart_date.strftime('%Y%m%d')
 
     main(first_chart_date_str)
