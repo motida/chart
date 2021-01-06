@@ -25,7 +25,7 @@ FIRST_CHART_DATE = date(1952, 11, 14)
 
 def main(first_chart_date_str):
     next_chart_url = '{}/charts/singles-chart/{}/7501/'.format(BASE_URL, first_chart_date_str)
-    chart_id = 848
+    chart_id = 3506
     batch_data = pd.DataFrame()
     while next_chart_url:
         data, next_chart_url = get_chart_data(chart_id, next_chart_url)
@@ -75,7 +75,7 @@ def get_chart_data(chart_id, curr_chart_url):
 
 
 if __name__ == '__main__':
-    first_chart_date = date(1969, 2, 5)
+    first_chart_date = date(2020, 1, 10)
     #first_chart_date = FIRST_CHART_DATE
     first_chart_date_str = first_chart_date.strftime('%Y%m%d')
 
